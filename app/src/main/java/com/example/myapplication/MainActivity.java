@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final String TAG = "MainActivity";
 
     public ArrayList<BluetoothDevice> mBTDevices = new ArrayList<>();
-
     public DeviceListAdapter mDeviceListAdapter;
     BluetoothAdapter mBluetoothAdapter;
     Button btnEnableDisable_Discoverable;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
     }
-
 
     public void enableDisableBT() {
         if (mBluetoothAdapter == null) {
@@ -245,9 +243,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             if (action.equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mBTDevices.add(device);
-                mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
-                lvNewDevices.setAdapter(mDeviceListAdapter);
+
+                if (!mBTDevices.contains(device)) {
+                    mBTDevices.add(device);
+                }
+
+                if (lvNewDevices.getAdapter() == null) {
+                    mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, mBTDevices);
+                    lvNewDevices.setAdapter(mDeviceListAdapter);
+                } else {
+                    mDeviceListAdapter.notifyDataSetChanged();
+                }
 
                 Toast.makeText(getApplicationContext(), "onReceive: " + device.getName() + ": " + device.getAddress(), Toast.LENGTH_SHORT).show();
             }
